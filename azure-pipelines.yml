@@ -1,0 +1,29 @@
+schedules:
+  # use https://crontab.guru/ to figure out cron
+- cron: '0 4 * * *'
+  # display Names to provide names to each step
+  displayName: Run every day at 4am
+  branches:
+    include:
+    - master
+  always: True
+pr: none
+# triggers can be set on repos commit by using trigger: master
+trigger: none
+variables:
+  # set up variable groups in Pipelines/Library
+- group: preprod-connection-group
+# set pool to run on Default, this is our machine - try not to run during work hours as your service will be queued
+pool: 'Default'
+jobs:
+  - job: InstallRequirements
+    steps:
+        # execute cmd using script:
+      - script: pip install -r requirements.txt
+        displayName: install requirements
+  - job: RunFile
+    steps:
+      # to call variables from above, use $(variablename)
+      # use python3, regular python command won't work
+      - script: python3 main.py
+        displayName: Execute the file
